@@ -31,7 +31,7 @@ def readFile(file_path):
 
 
 def main():
-    file_path = r"C:\Users\User\Desktop\first question\logste.txt.txt"
+    file_path = r"C:\Users\User\Desktop\Hadasim\question1\logste.txt.txt"
     if os.path.exists(file_path):
         print("File found!")
     else:
