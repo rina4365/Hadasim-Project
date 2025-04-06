@@ -5,19 +5,33 @@ date_pattern = r"\b\d{2}/\d{2}/\d{4} \d{2}\b"
 number_pattern = r"\b\d{1,6}\.\d{0,3}\b"
 my_set = set()
 my_list = [[] for _ in range(30)]
+my_average_list = [[] for _ in range(24)]
+#my_average_list = [(0.0,0)]*24
+
 
 def print_average(data_of_day):
     average = 0
-    count = 0
     for line in data_of_day:
         split_data = line.split() 
         hour = split_data[1].split(':')[0]
-        if hour == '06':
-            num = float(split_data[2])
-            average += num
-            count += 1
-    if count != 0:
-        print(average/count)
+        hour_index = int(hour)
+        number = float(split_data[2])
+
+        if not my_average_list[int(hour)]:
+            start_hour = f"{hour_index:02}:00:00"
+            my_average_list[hour_index].append(start_hour)
+            my_average_list[hour_index].append(number)
+            my_average_list[hour_index].append(1)
+        else:
+            my_average_list[hour_index][1] += number
+            my_average_list[hour_index][2] += 1 
+
+    for x in my_average_list:
+        print(f"start time: {split_data[0]} {x[0]}, average: {round(x[1]/x[2],1)}")
+        
+
+       
+   
 
 
 def add_to_list(line):
@@ -60,7 +74,8 @@ def readFile(file_path):
         print("empty")
         return
     validate_data(data)
-    print_average(my_list[0])
+    for day in my_list:
+        print_average(day)
 
 
 

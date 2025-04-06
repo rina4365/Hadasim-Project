@@ -13,7 +13,8 @@ my_set = set()
 
 def add_to_list(date, number):
         num = float(number)
-        if date in time_list.keys():
+        if date in time_list.keys() and len(time_list[date]) == 2:
+            #value = len(time_list[date])
             a,b = time_list[date]
             if isinstance(a, (int)):
                 a = a + 1
@@ -49,7 +50,6 @@ def validate_data(data):
                 add_to_list(date_line.group(0), split_data[2])
             elif date_line_num:
                 add_to_list(date_line.group(0), date_line_num[0])
-           
 
 
 def readFile(file_path):
