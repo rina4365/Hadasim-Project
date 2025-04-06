@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 import threading
 from enum import Enum
+from collections import OrderedDict
+
 
 app = Flask(__name__)
 
 orders_list = dict()
 order_number = 0
+suppliers_list = dict()
 
 
 class OrderStatus(Enum):
@@ -24,21 +27,34 @@ class order:
         self.order_status = OrderStatus.PENDING
 
 
-# class supplier:
-#     def __init__(self, supplier_name, agent_name, phone_number):
-#         self.supplier_name = supplier_name
-#         self.agent_name = agent_name
-#         self.phone_number = phone_number
-#         self.products_list = OrderedDict()
+class product:
+    def __init__(self, name, price, min):
+        self.name = name
+        self.price = price
+        self.minimum_to_order = min
 
-# def add_new_product(product):
-#     if product.supplier_name in products_dict.keys():
-#        # products_dict[product.supplier_name]
-#     else:
-#         products_dict[product.supplier_name] = product
+    def __str__(self):
+        # Custom print format for each product
+        return f"Product: {self.name}, Price: {self.price}, Minimum Order: {self.minimum_to_order}"
 
 
+class supplier:
+    def __init__(self, supplier_name, agent_name, phone_number):
+        self.supplier_name = supplier_name
+        self.agent_name = agent_name
+        self.phone_number = phone_number
+        self.products_list = OrderedDict()
 
+
+    def __str__(self):
+        # Custom print format for supplier details and products
+        product_details = ", ".join([f"{key}: {value}" for key, value in self.products_list.items()])
+        return f"Supplier: {self.supplier_name}, Agent: {self.agent_name}, Phone: {self.phone_number}, Products: [{product_details}]"
+
+
+    def add_product(self,product_name, product_price, product_min_amount):
+        new_product = product(product_name, product_price, product_min_amount)
+        self.products_list[product_name] = new_product
 
 
 def add_to_order(new_order, product_name, amount):
@@ -52,7 +68,7 @@ def create_order(supplier_name):
     order_number += 1
     new_order = order(order_number, supplier_name)
     orders_list[order_number] = new_order
-    products_list = suppliers_list[supplier_name].products_list
+    products_list = orders_list[supplier_name].products_list
     print(products_list)
     #add_to_order(new_order, product_name)
 
@@ -71,48 +87,63 @@ def close_order(order_number):
     else:
         print(f"there is no order number {order_number}")
 
+def add_new_supplier(supplier_name,agent_name, phone_number):
+    if supplier_name in suppliers_list.keys():
+        print("supplier is already exist")
+    else:
+        new_supplier = supplier(supplier_name, agent_name, phone_number)
+        suppliers_list[supplier_name] = new_supplier
+        print("supplier added")
+
+# def main_loop():
+#     while True:
+#         print("\nMenu")
+#         print("1.create new order")
+#         print("2.see open orders")
+#         print("3.close order")
+#         print("4.exit")
+
+#         choice = input("Enter your choice: ")
+
+#         if choice == "1":
+#             supplier_name = input("please enter from which supplier you want to order: ")
+#             create_order(supplier_name)
+#         elif choice == "2":
+#             print_open_orders()
+#         elif choice == "3":
+#             order_number = input("please enter order number: ")
+#             close_order(order_number)
+#         elif choice == "4":
+#             print("exit")
+#             break
+
+#         else:
+#             print("Invalid choice, try again.")
+
 
 @app.route('/action', methods=['POST'])
 def handle_action():
     data = request.get_json()
-    request_type = data.get("type")
+    request_type = data.get("action")
 
     if request_type == "see orders":
-        name = data["supplier name"]
-        return jsonify({"message": f"Order {order_id} confirmed."})
+        return jsonify({"message": "Order confirmed."})
 
     elif request_type == "approve order":
         order_id = data["order number"]
-        return jsonify({"message": f"Order {order_id} confirmed."})
-
+        return jsonify({"message": "Order confirmed."})
+    
+    elif request_type == "add new soplier":
+        add_new_supplier(data.get("suppliern name"), data.get("agent"), data.get("phone"))
+        return jsonify({"message": "Order confirmed."})
+    
     else:
         return jsonify({"error": "Unknown request type"}), 400
     
 
-def main_loop():
-    while True:
-        print("\nMenu")
-        print("1.create new order")
-        print("2.see open orders")
-        print("3.close order")
-        print("4.exit")
-
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            supplier_name = input("please enter from which supplier you want to order: ")
-            create_order(supplier_name)
-        elif choice == "2":
-            print_open_orders()
-        elif choice == "3":
-            order_number = input("please enter order number: ")
-            close_order(order_number)
-        elif choice == "4":
-            print("Goodbye!")
-            break
-
+# 
 
 if __name__ == "__main__":
-    threading.Thread(target=main_loop, daemon=True).start()
+    # threading.Thread(target=main_loop, daemon=True).start()
     app.run(port=5000)
 
