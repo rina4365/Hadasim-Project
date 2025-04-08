@@ -1,0 +1,45 @@
+SELECT 'Mother' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Mother_Id = P2.Person_Id
+
+UNION ALL
+
+SELECT 'Father' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Father_Id = P2.Person_Id
+
+UNION ALL
+
+SELECT 'Spouse' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Spouse_Id = P2.Person_Id
+
+UNION ALL
+
+SELECT 'Brother' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Father_Id = P2.Father_Id OR P1.Mother_Id = P2.Mother_Id
+WHERE P2.Gender = 'Male'
+
+UNION ALL
+
+SELECT 'Sister' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Father_Id = P2.Father_Id OR P1.Mother_Id = P2.Mother_Id
+WHERE P2.Gender = 'Female'
+
+UNION ALL
+
+SELECT 'Son' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Person_Id = P2.Father_Id OR P1.Person_Id = P2.Mother_Id
+WHERE P2.Gender = 'Male'
+
+UNION ALL
+
+SELECT 'Daughter' AS Connection_Type, P1.Person_Id, P2.Person_Id AS Relative_Id
+FROM Person P1
+JOIN Person P2 ON P1.Person_Id = P2.Father_Id OR P1.Person_Id = P2.Mother_Id
+WHERE P2.Gender = 'Female'
+
+ORDER BY Person_Id;
