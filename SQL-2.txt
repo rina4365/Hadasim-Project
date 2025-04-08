@@ -1,5 +1,0 @@
-UPDATE Person P1
-JOIN Person P2 ON P1.Spouse_Id = P2.Person_Id
-SET P2.Spouse_Id = P1.Person_Id
-WHERE P1.Spouse_Id IS NOT NULL
-AND P2.Spouse_Id IS NULL;
