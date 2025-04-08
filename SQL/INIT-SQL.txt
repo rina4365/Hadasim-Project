@@ -1,0 +1,9 @@
+CREATE TABLE Person (
+    Person_Id INT PRIMARY KEY,
+    Personal_Name VARCHAR(50),
+    Family_Name VARCHAR(50),
+    Gender VARCHAR(10),
+    Father_Id INT,
+    Mother_Id INT,
+    Spouse_Id INT
+);
