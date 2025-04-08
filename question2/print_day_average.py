@@ -1,6 +1,8 @@
 import pandas as pd
+import os
 
-data = pd.DataFrame()
+
+df_no_duplicates = pd.DataFrame()
 
 
 def remove_duplicates(data):
@@ -23,24 +25,37 @@ def validate_data(data):
     validate_date(data)
 
 
-
 def cal_average(data):
     data['timestamp'] = data['timestamp'].dt.strftime('%Y-%m-%d %H')
     data['timestamp'] = pd.to_datetime(data['timestamp'], errors='coerce')
     data['timestamp'] = data['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    average_data = data.groupby('timestamp').agg(average = ('value','mean'))
-    average_data['average'] = average_data['average'].round(1)
-    average_data.to_csv('average_data.csv', header=True)
+    data = data.groupby('timestamp').agg(average = ('value','mean'))
+    data['average'] = data['average'].round(1)
+    
+    data.to_csv('average_day_data.csv',  mode='a', header=False)
 
 
 def main():
 
-    file_path = r"C:\Users\User\Desktop\Hadasim\question2\time_series.csv" 
-   
-    data = pd.read_csv('time_series.csv')
+    file_path = r"C:\Users\User\Desktop\Hadasim\question2\time_series.csv.xlsx" 
+  
+    data = pd.read_csv('time_series.csv', parse_dates=['timestamp'],)
     data['timestamp'] = pd.to_datetime(data['timestamp'], errors='coerce')
-    validate_data(data)
-    cal_average(data)
+  
+
+
+    data['date'] = data['timestamp'].dt.date
+    average_data_file = pd.DataFrame()
+    average_data_file.to_csv('average_day_data.csv', mode='w')
+    
+    for date, group in data.groupby('date'):
+        validate_data(group)
+        cal_average(group)
+        print(f'Day for date {date}: {date.strftime("%A")}') 
+            
+    
+    
+
 
 if __name__ == "__main__":
     main()
